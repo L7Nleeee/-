@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+
+<style>
+.v03-dashboard{min-height:100vh;background:#f7f7f5;padding:34px 38px;font-family:"Noto Sans TC",system-ui,sans-serif;color:#252525}
+.v03-topbar{display:flex;justify-content:space-between;align-items:flex-end;max-width:1450px;margin:0 auto 24px}
+.v03-brand{font-size:30px;font-weight:700;letter-spacing:-.03em}
+.v03-sub{margin-top:3px;color:#858585;font-size:13px}
+.v03-date{font-size:14px;color:#777}
+.v03-grid{max-width:1450px;margin:auto;display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:18px;align-items:stretch}
+.v03-panel{background:#fff;border:1px solid #e8e8e4;border-radius:22px;box-shadow:0 8px 28px rgba(0,0,0,.035)}
+.v03-panel-title{font-size:15px;font-weight:700}
+.v03-panel-note{font-size:12px;color:#999;margin-top:5px}
+.v03-categories{padding:25px 22px}
+.v03-cat-list{display:flex;flex-direction:column;gap:7px;margin-top:20px}
+.v03-cat-list button{border:0;background:transparent;border-radius:14px;padding:13px 10px;display:grid;grid-template-columns:34px 1fr auto;align-items:center;text-align:left;cursor:pointer;font:inherit;transition:.15s}
+.v03-cat-list button:hover{background:#f5f5f2;transform:translateX(2px)}
+.v03-cat-list span{font-size:22px}.v03-cat-list b{font-size:14px}.v03-cat-list em{font-style:normal;color:#777;font-size:13px}
+.v03-center{display:flex;flex-direction:column;gap:18px}
+.v03-month{padding:28px 30px;min-height:245px}
+.v03-total{font-size:54px;font-weight:700;letter-spacing:-.05em;margin-top:18px}
+.v03-meta{font-size:13px;color:#888}
+.v03-mini-row{display:grid;grid-template-columns:auto auto;gap:8px 20px;margin-top:22px;border-top:1px solid #eee;padding-top:15px;font-size:12px;color:#888}
+.v03-mini-row strong{color:#333;font-size:13px}
+.v03-diary-card{flex:1;min-height:175px;border:1px solid #e5e5df;border-radius:22px;background:#fff;display:flex;align-items:center;text-align:left;padding:25px 28px;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.035);transition:.18s}
+.v03-diary-card:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(0,0,0,.07)}
+.v03-diary-icon{font-size:38px;margin-right:18px}.v03-diary-copy{flex:1}.v03-diary-label{font-size:22px;font-weight:700}.v03-diary-desc{font-size:13px;color:#888;margin-top:6px}.v03-arrow{font-size:25px;color:#777}
+.v03-today{padding:25px 22px}
+.v03-today-total{font-size:43px;font-weight:700;letter-spacing:-.04em;margin-top:18px}
+.v03-today-count{font-size:12px;color:#999;margin-top:3px}
+.v03-tx{margin-top:23px;display:flex;flex-direction:column;gap:12px}
+.v03-tx div{display:grid;grid-template-columns:30px 1fr auto;align-items:center;font-size:13px}
+.v03-tx span{font-size:20px}.v03-tx label{color:#555}.v03-tx b{font-weight:600}
+.v03-more{margin-top:25px;width:100%;border:0;background:#f5f5f2;border-radius:12px;padding:11px;cursor:pointer;font:inherit;font-size:12px;color:#555}
+@media(max-width:1000px){.v03-grid{grid-template-columns:1fr}.v03-center{order:-1}.v03-dashboard{padding:22px}.v03-topbar{align-items:flex-start}}
+</style>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InkLedger V0.2</title>
+
+<!--
+  V0.2 uses web fonts for the APP UI.
+  The user's own handwriting is NOT converted into this font:
+  it is stored as actual pen strokes on the diary canvas.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f5f2eb;--paper:#fffdf8;--ink:#282824;--muted:#858279;
+  --line:#e5e0d5;--accent:#c99143;--accent-soft:#f3e8d5;
+  --green:#6e8874;--red:#aa6c60;--shadow:0 12px 34px rgba(42,38,30,.065);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:26px 28px 70px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:42px;height:42px;border-radius:13px;background:#282824;color:#fffdf8;display:grid;place-items:center;font-family:"Klee One",cursive;font-size:24px}
+.brand h1{margin:0;font-family:"Noto Serif TC",serif;font-size:21px}.brand p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.top-actions{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:9px 14px}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.nav{display:flex;gap:3px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.nav button{border:0;background:transparent;padding:11px 18px;color:var(--muted);border-bottom:2px solid transparent}
+.nav button.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+
+.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:21px;box-shadow:var(--shadow)}
+.eyebrow{font-size:10px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase}
+.card h2{font-family:"Noto Serif TC",serif;font-size:16px;margin:5px 0 15px}
+
+.datebar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.datebar button{border:0;background:none;color:var(--muted);font-size:23px;padding:3px 8px}
+.datebar strong{font-family:"Noto Serif TC",serif;font-size:18px}
+
+.paper-shell{position:relative;border:1px solid #e8e1d3;border-radius:16px;overflow:hidden;background:#fffdf8}
+#paper{
+ display:block;width:100%;height:475px;touch-action:none;
+ background:
+ repeating-linear-gradient(to bottom,#fffdf8 0,#fffdf8 35px,#e7e0d3 36px,#fffdf8 37px);
+}
+.paper-tools{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;border-top:1px solid var(--line);background:rgba(255,253,248,.94)}
+.tool-group{display:flex;gap:7px;align-items:center}
+.tool{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-size:11px}
+.tool.active{background:var(--accent-soft);border-color:#dcc49e}
+.file-input{display:none}
+.hand-note{font-family:"Klee One",cursive;color:#31506c;font-size:12px}
+
+.ai-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
+.status{font-size:11px;color:var(--muted)}
+.status b{color:var(--green)}
+.notice{font-size:11px;color:var(--muted);line-height:1.65;margin-top:8px}
+
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{border:1px solid var(--line);border-radius:14px;padding:14px}
+.metric small{color:var(--muted);font-size:10px}.metric strong{display:block;font-size:23px;margin-top:5px}
+.expense-list{margin-top:13px}
+.expense{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.icon{width:37px;height:37px;border-radius:12px;background:#f0eadf;display:grid;place-items:center;font-size:17px;flex:0 0 auto}
+.info{flex:1}.info strong{display:block;font-size:13px}.info span{font-size:10px;color:var(--muted)}
+.amount{text-align:right;font-weight:700;font-size:13px}.amount small{display:block;color:var(--muted);font-weight:400;font-size:9px}
+.ai-box{margin-top:14px;padding:13px 14px;border:1px dashed #d7c6a7;background:#fbf5e9;border-radius:14px;font-size:11px;line-height:1.75}
+
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:4px 0 13px}
+.section-title h2{margin:0}
+.filters{display:flex;gap:7px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:7px 10px;font-size:11px}
+.chip.active{background:var(--accent-soft);border-color:#dcc49e}
+
+.chart-wrap{height:260px;position:relative}
+.chart-wrap canvas{width:100%;height:100%}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%}
+
+.detail-head{display:grid;grid-template-columns:1fr auto;gap:15px;align-items:end;margin-bottom:14px}
+.detail-total{font-family:"Noto Serif TC",serif;font-size:28px}
+.detail-count{font-size:11px;color:var(--muted)}
+.bar{height:7px;background:#eee9df;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:12px 7px;border-bottom:1px solid var(--line)}
+th{font-size:10px;color:var(--muted);font-weight:500}.right{text-align:right}
+.pill{font-size:9px;padding:3px 6px;border-radius:7px;background:#eee9df;color:#69675f}
+.clickable{cursor:pointer}.clickable:hover{background:#fbf8f1}
+
+.calendar-note{font-size:11px;color:var(--muted);margin-top:10px}
+
+.modal{position:fixed;inset:0;background:rgba(25,24,20,.34);display:none;place-items:center;padding:18px;z-index:10}.modal.open{display:grid}
+.modal-card{width:min(520px,100%);background:var(--paper);border-radius:20px;padding:21px;box-shadow:0 28px 75px rgba(0,0,0,.2)}
+.form{display:grid;gap:11px}.form label{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}
+.form input,.form select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;background:#fffdf8}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+
+@media(max-width:850px){.app{padding:17px}.grid{grid-template-columns:1fr}}
+@media(max-width:560px){.app{padding:11px}.nav button{padding:10px 9px;font-size:12px}.card{padding:15px}.form-grid{grid-template-columns:1fr}.top-actions .btn{font-size:11px}.detail-head{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- V0.3 Dashboard -->
+<section id="dashboardV03" class="v03-dashboard">
+  <div class="v03-topbar">
+    <div>
+      <div class="v03-brand">InkLedger</div>
+      <div class="v03-sub">你的手寫日記 × 自動記帳</div>
+    </div>
+    <div class="v03-date">2026 / 09 / 19</div>
+  </div>
+
+  <div class="v03-grid">
+    <aside class="v03-panel v03-categories">
+      <div class="v03-panel-title">消費分類</div>
+      <div class="v03-panel-note">點擊分類查看完整明細</div>
+      <div class="v03-cat-list">
+        <button onclick="v03OpenCategory('餐飲')"><span>🍜</span><b>餐飲</b><em>$50</em></button>
+        <button onclick="v03OpenCategory('交通')"><span>🚆</span><b>交通</b><em>$90</em></button>
+        <button onclick="v03OpenCategory('購物')"><span>🛍️</span><b>購物</b><em>$2,390</em></button>
+        <button onclick="v03OpenCategory('生活')"><span>🏠</span><b>生活</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('娛樂')"><span>🎮</span><b>娛樂</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('其他')"><span>✦</span><b>其他</b><em>$0</em></button>
+      </div>
+    </aside>
+
+    <main class="v03-center">
+      <section class="v03-panel v03-month">
+        <div class="v03-panel-title">本月花費總額</div>
+        <div class="v03-total">$2,530</div>
+        <div class="v03-meta">2026 年 9 月 · 4 筆一般消費</div>
+        <div class="v03-mini-row">
+          <span>平均每日</span><strong>$133</strong>
+          <span>最大項目</span><strong>購物 $2,390</strong>
+        </div>
+      </section>
+
+      <button class="v03-diary-card" onclick="v03OpenDiary()">
+        <div class="v03-diary-icon">✍</div>
+        <div class="v03-diary-copy">
+          <div class="v03-diary-label">手寫日記</div>
+          <div class="v03-diary-desc">直接用 Apple Pencil 寫下今天的生活</div>
+        </div>
+        <div class="v03-arrow">→</div>
+      </button>
+    </main>
+
+    <aside class="v03-panel v03-today">
+      <div class="v03-panel-title">本日花費</div>
+      <div class="v03-today-total">$2,530</div>
+      <div class="v03-today-count">今天 · 4 筆</div>
+      <div class="v03-tx">
+        <div><span>🍜</span><label>早餐</label><b>$50</b></div>
+        <div><span>🚆</span><label>火車</label><b>$90</b></div>
+        <div><span>🛍️</span><label>鞋子</label><b>$2,390</b></div>
+      </div>
+      <button class="v03-more" onclick="v03OpenToday()">查看今日明細 →</button>
+    </aside>
+  </div>
+</section>
+
+<div class="app">
+<header>
+  <div class="brand">
+    <div class="logo">i</div>
+    <div><h1>InkLedger</h1><p>一本會自己幫你記帳的生活日記</p></div>
+  </div>
+  <div class="top-actions">
+    <button class="btn" onclick="openExpense()">＋ 手動記帳</button>
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="active" data-view="diary">📖 日記</button>
+  <button data-view="ledger">◫ 帳務</button>
+  <button data-view="analysis">◌ 分析</button>
+</nav>
+
+<section id="diary" class="view active">
+<div class="grid">
+  <div class="card">
+    <div class="datebar">
+      <button onclick="changeDay(-1)">‹</button>
+      <strong id="dateTitle">2026 / 09 / 19　SAT</strong>
+      <button onclick="changeDay(1)">›</button>
+    </div>
+
+    <div class="paper-shell">
+      <canvas id="paper"></canvas>
+      <div class="paper-tools">
+        <div class="tool-group">
+          <button class="tool active" id="penBtn" onclick="setTool('pen')">✎ 筆</button>
+          <button class="tool" onclick="clearPaper()">清除</button>
+          <label class="tool">📷 匯入手寫<input class="file-input" type="file" accept="image/*" onchange="importImage(event)"></label>
+        </div>
+        <span class="hand-note">你的原始筆跡會保留</span>
+      </div>
+    </div>
+
+    <div class="ai-row">
+      <span class="status">● <b id="saveStatus">已自動保存筆跡</b></span>
+      <button class="btn primary" onclick="analyzeDiary()">🤖 AI 自動記帳</button>
+    </div>
+    <div class="notice">
+      V0.2 先用真正的手寫 Canvas 模擬 iPad / Apple Pencil 輸入。
+      正式版會把「原始筆跡」與「AI 辨識文字」綁定保存。
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="eyebrow">Today</div><h2>今日摘要</h2>
+      <div class="summary">
+        <div class="metric"><small>一般消費</small><strong id="todaySpend">$2,590</strong></div>
+        <div class="metric"><small>投資資金流出</small><strong id="todayInvest">$2,330</strong></div>
+      </div>
+      <div class="expense-list" id="todayList"></div>
+      <div class="ai-box" id="aiBox">
+        AI 辨識示範：GoShare 的「$30」與「最後共花 $60」不重複計算；
+        鞋子以最後特價 $2,390 記帳；股票 $2,330 獨立標為投資。
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="eyebrow">Payment</div><h2>付款方式</h2>
+      <div id="paymentSummary"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="ledger" class="view">
+  <div class="card">
+    <div class="section-title">
+      <h2>個人總帳</h2>
+      <div class="filters">
+        <button class="chip active">2026 年 09 月</button>
+        <button class="chip">全部</button>
+        <button class="chip">TWD</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>日期</th><th>分類</th><th>項目</th><th>付款方式</th><th class="right">金額</th></tr></thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="analysis" class="view">
+  <div class="grid">
+    <div class="card">
+      <div class="eyebrow">Monthly</div><h2>本月消費結構</h2>
+      <div class="chart-wrap"><canvas id="pie"></canvas></div>
+      <div class="legend" id="pieLegend"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Trend</div><h2>每月花費趨勢</h2>
+      <div class="chart-wrap"><canvas id="line"></canvas></div>
+      <div class="notice">目前只有 2026/09 有實際資料，因此圖表不會虛構 4～8 月資料。</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="section-title">
+      <h2>分類分析</h2><span class="pill">點擊分類查看完整明細</span>
+    </div>
+    <div id="categoryRows"></div>
+  </div>
+</section>
+
+<section id="categoryDetail" class="view">
+  <div class="card">
+    <div class="section-title">
+      <h2 id="detailTitle">🍜 餐飲</h2>
+      <button class="btn" onclick="goAnalysis()">← 返回分析</button>
+    </div>
+    <div class="filters" style="margin-bottom:16px">
+      <button class="chip active" onclick="setRange('month',this)">本月</button>
+      <button class="chip" onclick="setRange('week',this)">本週</button>
+      <button class="chip" onclick="setRange('3m',this)">近3個月</button>
+      <button class="chip" onclick="setRange('custom',this)">自訂</button>
+    </div>
+    <div class="detail-head">
+      <div>
+        <div class="eyebrow" id="detailRange">2026/09/01 — 2026/09/19</div>
+        <div class="detail-total" id="detailTotal">$50</div>
+        <div class="detail-count" id="detailCount">1 筆消費</div>
+        <div class="bar"><i id="detailBar" style="width:100%"></i></div>
+      </div>
+      <div class="metric"><small>付款方式</small><strong id="detailPay">未指定</strong></div>
+    </div>
+    <div id="detailBreakdown"></div>
+    <div style="margin-top:22px">
+      <div class="eyebrow">Transaction History</div>
+      <h2 style="margin-top:5px">逐筆明細</h2>
+      <table>
+        <thead><tr><th>日期</th><th>項目</th><th>付款方式</th><th class="right">金額</th></tr></thead>
+        <tbody id="detailBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="modal">
+<div class="modal-card">
+  <div class="section-title"><h2>新增一筆記帳</h2><button class="btn" onclick="closeExpense()">×</button></div>
+  <div class="form">
+    <div><label>項目</label><input id="fItem" placeholder="例如：午餐"></div>
+    <div class="form-grid">
+      <div><label>分類</label><select id="fCat"><option>餐飲</option><option>交通</option><option>購物</option><option>娛樂</option><option>生活</option><option>旅遊</option><option>投資</option><option>其他</option></select></div>
+      <div><label>金額</label><input id="fAmount" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-grid">
+      <div><label>幣別</label><select id="fCurrency"><option>TWD</option><option>JPY</option><option>USD</option><option>EUR</option></select></div>
+      <div><label>付款方式</label><select id="fPay"><option>未指定</option><option>現金</option><option>信用卡</option><option>銀行轉帳</option><option>行動支付</option></select></div>
+    </div>
+  </div>
+  <div class="modal-actions"><button class="btn" onclick="closeExpense()">取消</button><button class="btn primary" onclick="saveExpense()">加入總帳</button></div>
+</div></div>
+
+<script>
+const state={
+ date:new Date('2026-09-19'),
+ selectedCategory:'餐飲',
+ range:'month',
+ expenses:[
+  {date:'2026-09-19',cat:'交通',item:'GoShare',amount:60,currency:'TWD',pay:'未指定',icon:'🚲',kind:'expense'},
+  {date:'2026-09-19',cat:'交通',item:'火車車資',amount:90,currency:'TWD',pay:'未指定',icon:'🚆',kind:'expense'},
+  {date:'2026-09-19',cat:'餐飲',item:'早餐｜飲料＋麵包',amount:50,currency:'TWD',pay:'未指定',icon:'☕',kind:'expense'},
+  {date:'2026-09-19',cat:'購物',item:'鞋子',amount:2390,currency:'TWD',pay:'未指定',icon:'👟',kind:'expense'},
+  {date:'2026-09-19',cat:'投資',item:'台積電',amount:2330,currency:'TWD',pay:'未指定',icon:'📈',kind:'investment'}
+ ],
+ actualMonths:{'2026-09':2590}
+};
+const icons={餐飲:'☕',交通:'🚆',購物:'🛍️',娛樂:'◉',生活:'⌂',旅遊:'✦',投資:'↗',其他:'•'};
+
+function money(n,c='TWD'){return (c==='TWD'?'$':c+' ')+Number(n).toLocaleString('zh-TW')}
+function render(){
+ const ex=state.expenses.filter(x=>x.kind==='expense'&&x.date==='2026-09-19');
+ const inv=state.expenses.filter(x=>x.kind==='investment'&&x.date==='2026-09-19');
+ document.getElementById('todaySpend').textContent=money(ex.reduce((a,b)=>a+b.amount,0));
+ document.getElementById('todayInvest').textContent=money(inv.reduce((a,b)=>a+b.amount,0));
+ document.getElementById('todayList').innerHTML=ex.map(x=>`
+ <div class="expense clickable" onclick="openCategory('${x.cat}')">
+   <div class="icon">${x.icon||icons[x.cat]}</div>
+   <div class="info"><strong>${x.item}</strong><span>${x.cat} · ${x.pay}</span></div>
+   <div class="amount">${money(x.amount,x.currency)}<small>${x.currency}</small></div>
+ </div>`).join('');
+ document.getElementById('ledgerBody').innerHTML=state.expenses.map(x=>`
+ <tr class="clickable" onclick="openCategory('${x.cat}')">
+   <td>${x.date.replaceAll('-','/')}</td><td>${icons[x.cat]||'•'} ${x.cat}</td>
+   <td>${x.item}${x.kind==='investment'?' <span class="pill">投資</span>':''}</td>
+   <td>${x.pay}</td><td class="right">${money(x.amount,x.currency)}</td>
+ </tr>`).join('');
+ const pays={};ex.forEach(x=>pays[x.pay]=(pays[x.pay]||0)+x.amount);
+ document.getElementById('paymentSummary').innerHTML=Object.entries(pays).map(([k,v])=>`
+ <div class="expense"><div class="icon">${k==='現金'?'💵':k==='信用卡'?'💳':k==='銀行轉帳'?'🏦':'◌'}</div>
+ <div class="info"><strong>${k}</strong><span>本日一般消費</span></div><div class="amount">${money(v)}</div></div>`).join('');
+ renderCategories(ex);drawPie();drawLine();
+}
+function renderCategories(ex){
+ const sums={};ex.forEach(x=>sums[x.cat]=(sums[x.cat]||0)+x.amount);
+ const total=ex.reduce((a,b)=>a+b.amount,0)||1;
+ document.getElementById('categoryRows').innerHTML=Object.entries(sums).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+ <div class="expense clickable" onclick="openCategory('${k}')">
+   <div class="icon">${icons[k]||'•'}</div>
+   <div class="info"><strong>${k}</strong><span>${Math.round(v/total*100)}% · ${ex.filter(x=>x.cat===k).length} 筆</span></div>
+   <div class="amount">${money(v)}　›</div>
+ </div>`).join('');
+}
+function setupCanvas(canvas){
+ const dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
+ canvas.width=w*dpr;canvas.height=h*dpr;
+ const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return [ctx,w,h];
+}
+function drawPie(){
+ const c=document.getElementById('pie');if(!c)return;const [ctx,w,h]=setupCanvas(c);
+ const ex=state.expenses.filter(x=>x.kind==='expense'),s={};ex.forEach(x=>s[x.cat]=(s[x.cat]||0)+x.amount);
+ const vals=Object.entries(s),total=vals.reduce((a,b)=>a+b[1],0)||1,cx=w/2,cy=h/2,r=Math.min(w,h)*.35;
+ let a=-Math.PI/2;ctx.lineWidth=28;
+ const cols=['#c99143','#718b72','#8b8fa3','#b87868','#9d8ab0'];
+ vals.forEach(([k,v],i)=>{const da=v/total*Math.PI*2;ctx.beginPath();ctx.strokeStyle=cols[i%cols.length];ctx.arc(cx,cy,r,a,a+da);ctx.stroke();a+=da});
+ ctx.textAlign='center';ctx.fillStyle='#282824';ctx.font='700 23px "Noto Sans TC"';ctx.fillText('$'+total.toLocaleString(),cx,cy+1);
+ ctx.font='11px "Noto Sans TC"';ctx.fillStyle='#858279';ctx.fillText('本月消費',cx,cy+21);
+ document.getElementById('pieLegend').innerHTML=vals.map(([k,v],i)=>`<span><i class="dot" style="background:${cols[i%cols.length]}"></i>${k} ${Math.round(v/total*100)}%</span>`).join('');
+}
+function drawLine(){
+ const c=document.getElementById('line');if(!c)return;const [ctx,w,h]=setupCanvas(c);
+ const entries=Object.entries(state.actualMonths).sort(), vals=entries.map(x=>x[1]);
+ const pad={l:52,r:12,t:22,b:34}, max=Math.max(...vals,1000)*1.25;
+ ctx.font='10px "Noto Sans TC"';ctx.textAlign='right';ctx.fillStyle='#858279';ctx.strokeStyle='#e5e0d5';ctx.lineWidth=1;
+ const ticks=4;
+ for(let i=0;i<=ticks;i++){
+   const value=max*(1-i/ticks),y=pad.t+(h-pad.t-pad.b)*i/ticks;
+   ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+   ctx.fillText('$'+Math.round(value).toLocaleString(),pad.l-7,y+3);
+ }
+ ctx.textAlign='center';
+ if(entries.length===1){
+   const x=w/2,y=pad.t+(h-pad.t-pad.b)*(1-vals[0]/max);
+   ctx.fillStyle='#c99143';ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#858279';ctx.fillText('9月',x,h-12);
+   ctx.fillStyle='#282824';ctx.font='600 11px "Noto Sans TC"';ctx.fillText('$'+vals[0].toLocaleString(),x,y-13);
+   return;
+ }
+ ctx.strokeStyle='#282824';ctx.lineWidth=2;ctx.beginPath();
+ entries.forEach(([m,v],i)=>{const x=pad.l+(w-pad.l-pad.r)*i/(entries.length-1),y=pad.t+(h-pad.t-pad.b)*(1-v/max);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+}
+function analyzeDiary(){
+ document.getElementById('aiBox').innerHTML='<b>🤖 分析完成</b><br>已辨識 4 筆一般消費、1 筆投資。GoShare 的 $30 與最終 $60 已合併；鞋子以 $2,390 記帳；股票 $2,330 標為投資。';
+ document.getElementById('saveStatus').textContent='AI 分析完成 · 原始筆跡仍保留';
+ render();
+}
+function openCategory(cat){
+ state.selectedCategory=cat;
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+ document.getElementById('categoryDetail').classList.add('active');
+ renderDetail();
+}
+function renderDetail(){
+ const cat=state.selectedCategory;
+ document.getElementById('detailTitle').textContent=(icons[cat]||'•')+' '+cat;
+ const items=state.expenses.filter(x=>x.kind==='expense'&&x.cat===cat);
+ const total=items.reduce((a,b)=>a+b.amount,0);
+ document.getElementById('detailTotal').textContent=money(total);
+ document.getElementById('detailCount').textContent=items.length+' 筆消費';
+ document.getElementById('detailRange').textContent='2026/09/01 — 2026/09/19';
+ const pays={};items.forEach(x=>pays[x.pay]=(pays[x.pay]||0)+x.amount);
+ document.getElementById('detailPay').textContent=Object.keys(pays).join('、')||'未指定';
+ document.getElementById('detailBar').style.width=Math.min(100,Math.max(5,total/2590*100))+'%';
+ const subs={};items.forEach(x=>subs[x.item]=(subs[x.item]||0)+x.amount);
+ document.getElementById('detailBreakdown').innerHTML=Object.entries(subs).map(([k,v])=>`
+ <div class="expense"><div class="icon">${icons[cat]||'•'}</div><div class="info"><strong>${k}</strong><span>${Math.round(v/Math.max(total,1)*100)}% of ${cat}</span></div><div class="amount">${money(v)}</div></div>`).join('');
+ document.getElementById('detailBody').innerHTML=items.map(x=>`
+ <tr><td>${x.date.replaceAll('-','/')}</td><td>${x.item}</td><td>${x.pay}</td><td class="right">${money(x.amount,x.currency)}</td></tr>`).join('') || '<tr><td colspan="4" class="right">目前沒有資料</td></tr>';
+}
+function goAnalysis(){document.querySelector('[data-view="analysis"]').click()}
+function setRange(r,el){state.range=r;document.querySelectorAll('#categoryDetail .chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderDetail()}
+function openExpense(){document.getElementById('modal').classList.add('open')}
+function closeExpense(){document.getElementById('modal').classList.remove('open')}
+function saveExpense(){
+ const item=document.getElementById('fItem').value.trim(),amount=Number(document.getElementById('fAmount').value);
+ if(!item||!amount){alert('請輸入項目與金額');return}
+ const cat=document.getElementById('fCat').value;
+ state.expenses.push({date:'2026-09-19',cat,item,amount,currency:document.getElementById('fCurrency').value,pay:document.getElementById('fPay').value,icon:icons[cat],kind:cat==='投資'?'investment':'expense'});
+ if(cat!=='投資'&&document.getElementById('fCurrency').value==='TWD')state.actualMonths['2026-09']=(state.actualMonths['2026-09']||0)+amount;
+ closeExpense();render();
+ document.getElementById('fItem').value='';document.getElementById('fAmount').value='';
+}
+function changeDay(n){
+ state.date.setDate(state.date.getDate()+n);const d=state.date,days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+ document.getElementById('dateTitle').textContent=`${d.getFullYear()} / ${String(d.getMonth()+1).padStart(2,'0')} / ${String(d.getDate()).padStart(2,'0')}　${days[d.getDay()]}`;
+ clearPaper();
+}
+function goView(id){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===id));
+ if(id==='analysis')setTimeout(()=>{drawPie();drawLine()},40);
+}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>goView(b.dataset.view)));
+
+/* Real handwriting canvas */
+const paper=document.getElementById('paper');let ctx,writing=false,last=null,tool='pen';
+function resizePaper(){
+ const old=document.createElement('canvas');old.width=paper.width;old.height=paper.height;
+ if(paper.width&&paper.height)old.getContext('2d').drawImage(paper,0,0);
+ const dpr=devicePixelRatio||1,w=paper.clientWidth,h=paper.clientHeight;paper.width=w*dpr;paper.height=h*dpr;
+ ctx=paper.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';
+ if(old.width&&old.height)ctx.drawImage(old,0,0,old.width,old.height,0,0,w,h);
+}
+function pos(e){const r=paper.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+paper.addEventListener('pointerdown',e=>{writing=true;paper.setPointerCapture(e.pointerId);last=pos(e)});
+paper.addEventListener('pointermove',e=>{
+ if(!writing)return;const p=pos(e);ctx.strokeStyle='#29415b';ctx.lineWidth=tool==='eraser'?12:2.2;ctx.globalCompositeOperation=tool==='eraser'?'destination-out':'source-over';
+ ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;saveStatus();
+});
+paper.addEventListener('pointerup',()=>{writing=false;last=null;ctx.globalCompositeOperation='source-over';saveStatus()});
+paper.addEventListener('pointercancel',()=>{writing=false;last=null});
+function saveStatus(){document.getElementById('saveStatus').textContent='已自動保存筆跡 · '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}
+function setTool(t){tool=t;document.getElementById('penBtn').classList.toggle('active',t==='pen')}
+function clearPaper(){resizePaper();ctx.clearRect(0,0,paper.clientWidth,paper.clientHeight);document.getElementById('saveStatus').textContent='已清除目前筆跡'}
+function importImage(e){
+ const file=e.target.files[0];if(!file)return;const img=new Image();img.onload=()=>{resizePaper();ctx.drawImage(img,0,0,paper.clientWidth,paper.clientHeight);document.getElementById('saveStatus').textContent='已匯入手寫圖片 · 尚未做 OCR'};img.src=URL.createObjectURL(file);
+}
+window.addEventListener('resize',()=>{resizePaper();drawPie();drawLine()});
+resizePaper();render();
+</script>
+
+<script>
+function v03OpenCategory(name){
+  // Reuse V0.2 category page when available.
+  if(typeof showPage === 'function'){
+    try { showPage('category'); } catch(e) {}
+  }
+}
+function v03OpenDiary(){
+  if(typeof showPage === 'function'){
+    try { showPage('diary'); return; } catch(e) {}
+  }
+  document.getElementById('paper')?.scrollIntoView({behavior:'smooth'});
+}
+function v03OpenToday(){
+  if(typeof showPage === 'function'){
+    try { showPage('ledger'); return; } catch(e) {}
+  }
+}
+</script>
+
+</body>
+</html>
