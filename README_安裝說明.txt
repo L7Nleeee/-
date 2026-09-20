@@ -1,8 +1,12 @@
-AnLedger V0.9.4
+AnLedger V1.0
+
 本版重點：
-1. iPad Apple Pencil 掌觸/頁面滑動干擾修正。
-2. 日記模式啟用時，Safari 頁面滑動、選取、手勢會被抑制。
-3. Apple Pencil 優先輸入，手掌/手指不建立筆畫。
-4. 保留 V0.9.3 手寫、儲存與分析功能。
-請在 Safari 開啟 index.html 對應的 GitHub Pages 網址後重新加入主畫面。
-若舊版 PWA 還在快取，先從主畫面刪除 AnLedger，再重新加入一次。
+1. Apple Pencil 手寫區獨立攔截觸控，其他按鈕恢復正常可點。
+2. 同一天支援多頁日記，可新增頁面。
+3. 所有頁面視為同一篇日記，AI hook 可一次取得全部頁面。
+4. 書寫結束後會自動嘗試呼叫 window.AnLedgerAI.analyze({date,pages,mode}).
+5. 若分析引擎尚未注入，會顯示等待 AI 分析引擎，不會假裝已分析。
+6. 加入 AnLedger 橘貓助手互動區與輕微浮動動畫。
+7. PWA cache 已更新為 anledger-v100。
+
+若 iPad 主畫面仍顯示舊圖示：刪除舊 PWA → Safari 重新開啟 index.html → 再加入主畫面。
