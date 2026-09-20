@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+
+<style>
+/* V0.4 Home Dashboard — warm ivory theme */
+.v03-dashboard{
+  min-height:100vh;
+  background:#f5f2eb;
+  padding:34px 38px 42px;
+  font-family:"Noto Sans TC",system-ui,sans-serif;
+  color:#282824;
+}
+.v03-topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  max-width:1450px;
+  margin:0 auto 24px;
+}
+.v03-brand{font-size:30px;font-weight:700;letter-spacing:-.03em}
+.v03-sub{margin-top:3px;color:#858279;font-size:13px}
+.v03-date{font-size:14px;color:#77736a}
+.v03-grid{
+  max-width:1450px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1fr;
+  gap:18px;
+  align-items:stretch;
+}
+.v03-panel{
+  background:#fffdf8;
+  border:1px solid #e5e0d5;
+  border-radius:22px;
+  box-shadow:0 12px 34px rgba(42,38,30,.065);
+}
+.v03-panel-title{font-size:15px;font-weight:700}
+.v03-panel-note{font-size:12px;color:#858279;margin-top:5px}
+.v03-categories{padding:25px 22px;min-height:465px}
+.v03-cat-list{display:flex;flex-direction:column;gap:7px;margin-top:20px}
+.v03-cat-list button{
+  border:0;
+  background:transparent;
+  border-radius:14px;
+  padding:13px 10px;
+  display:grid;
+  grid-template-columns:34px 1fr auto;
+  align-items:center;
+  text-align:left;
+  cursor:pointer;
+  font:inherit;
+  transition:.15s;
+  color:#282824;
+}
+.v03-cat-list button:hover{background:#f1ece2;transform:translateX(2px)}
+.v03-cat-list span{font-size:22px}
+.v03-cat-list b{font-size:14px}
+.v03-cat-list em{font-style:normal;color:#77736a;font-size:13px}
+.v03-center{display:flex;flex-direction:column;gap:18px}
+.v03-month{padding:28px 30px;min-height:245px}
+.v03-total{font-size:54px;font-weight:700;letter-spacing:-.05em;margin-top:18px}
+.v03-meta{font-size:13px;color:#858279}
+.v03-mini-row{
+  display:grid;
+  grid-template-columns:auto auto;
+  gap:8px 20px;
+  margin-top:22px;
+  border-top:1px solid #e5e0d5;
+  padding-top:15px;
+  font-size:12px;
+  color:#858279;
+}
+.v03-mini-row strong{color:#33312c;font-size:13px}
+.v03-diary-card{
+  flex:1;
+  min-height:202px;
+  border:1px solid #e5e0d5;
+  border-radius:22px;
+  background:#fffdf8;
+  display:flex;
+  align-items:center;
+  text-align:left;
+  padding:25px 28px;
+  cursor:pointer;
+  box-shadow:0 12px 34px rgba(42,38,30,.065);
+  transition:.18s;
+  color:#282824;
+}
+.v03-diary-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 15px 38px rgba(42,38,30,.09);
+  background:#fffefb;
+}
+.v03-diary-icon{font-size:38px;margin-right:18px}
+.v03-diary-copy{flex:1}
+.v03-diary-label{font-size:22px;font-weight:700}
+.v03-diary-desc{font-size:13px;color:#858279;margin-top:6px}
+.v03-arrow{font-size:25px;color:#77736a}
+.v03-right{
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:465px;
+}
+.v03-today{padding:25px 22px 22px}
+.v03-eyebrow{
+  font-size:10px;
+  letter-spacing:.16em;
+  color:#b18a51;
+  margin-bottom:7px;
+  font-weight:700;
+}
+.v03-today-total{font-size:43px;font-weight:700;letter-spacing:-.04em;margin-top:18px}
+.v03-today-count{font-size:12px;color:#99938a;margin-top:3px}
+.v03-tx{margin-top:23px;display:flex;flex-direction:column;gap:12px}
+.v03-tx div{display:grid;grid-template-columns:30px 1fr auto;align-items:center;font-size:13px}
+.v03-tx span{font-size:20px}
+.v03-tx label{color:#55524b}
+.v03-tx b{font-weight:600}
+.v03-more{
+  margin-top:25px;
+  width:100%;
+  border:0;
+  background:#f1ece2;
+  border-radius:12px;
+  padding:11px;
+  cursor:pointer;
+  font:inherit;
+  font-size:12px;
+  color:#5d5951;
+}
+.v03-right-links{
+  border-top:1px solid #e5e0d5;
+  padding:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:auto;
+  background:#faf7f0;
+}
+.v03-link-card{
+  border:1px solid #e5e0d5;
+  background:#f5f1e8;
+  border-radius:15px;
+  min-height:82px;
+  padding:13px 11px;
+  display:grid;
+  grid-template-columns:30px 1fr 16px;
+  align-items:center;
+  text-align:left;
+  cursor:pointer;
+  color:#302e29;
+  transition:.15s;
+}
+.v03-link-card:hover{background:#eee8dc;transform:translateY(-1px)}
+.v03-link-icon{
+  width:26px;height:26px;border-radius:9px;background:#e8dfd0;
+  display:grid;place-items:center;font-size:15px;color:#6d604c
+}
+.v03-link-card span:nth-child(2){display:flex;flex-direction:column;gap:3px}
+.v03-link-card b{font-size:13px}
+.v03-link-card small{font-size:10px;color:#948e85;line-height:1.3}
+.v03-link-card i{font-style:normal;color:#817a70;font-size:16px}
+@media(max-width:1000px){
+  .v03-grid{grid-template-columns:1fr}
+  .v03-center{order:-1}
+  .v03-dashboard{padding:22px}
+  .v03-topbar{align-items:flex-start}
+}
+
+/* V0.5: 回首頁 */
+.v05-legacy-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.v05-legacy-head h1{margin:0;}
+.v05-home-btn{
+  margin-left:auto;
+  border:1px solid #ded8cc;
+  background:#fffdf8;
+  color:#4d4a43;
+  border-radius:11px;
+  padding:8px 13px;
+  font-family:"Noto Sans TC",system-ui,sans-serif;
+  font-size:12px;
+  cursor:pointer;
+  box-shadow:0 3px 12px rgba(42,38,30,.04);
+  transition:.15s;
+}
+.v05-home-btn:hover{
+  background:#f1ece2;
+  transform:translateY(-1px);
+}
+
+/* V0.6 handwriting controls */
+.paper-tools .tool.active{background:#e9e1d2;border-color:#d8cbb8}
+@media(max-width:700px){.paper-tools{flex-wrap:wrap;gap:8px}.tool-group{flex-wrap:wrap}}
+
+.v07-empty-tx div{color:#99938a}
+.v07-empty-tx span{font-size:15px;color:#b1aa9f}
+.v07-empty-tx b{color:#b1aa9f}
+
+/* V1.1 practical AI + ledger persistence */
+.ai-settings-note{font-size:10px;color:var(--muted);line-height:1.6;margin-top:7px}
+.ai-key-row{display:flex;gap:8px;align-items:center}.ai-key-row input{flex:1}
+.ai-status{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:11px;color:var(--muted)}
+.ai-status-dot{width:8px;height:8px;border-radius:50%;background:#9b9487}.ai-status-dot.on{background:#6e8874;box-shadow:0 0 0 4px rgba(110,136,116,.12)}
+.v11-review{margin-top:10px;border:1px solid #eadfce;background:#fffdf8;border-radius:13px;padding:10px;font-size:11px}
+.v11-review-row{display:grid;grid-template-columns:1fr 72px 72px;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.v11-review-row:last-child{border-bottom:0}.v11-review-row select,.v11-review-row input{width:100%;border:1px solid var(--line);border-radius:8px;padding:5px;background:#fffdf8;font-size:10px}
+@media(max-width:560px){.v11-review-row{grid-template-columns:1fr 66px 66px}}
+</style>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnLedger</title>
+
+<!--
+  V0.2 uses web fonts for the APP UI.
+  The user's own handwriting is NOT converted into this font:
+  it is stored as actual pen strokes on the diary canvas.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f5f2eb;--paper:#fffdf8;--ink:#282824;--muted:#858279;
+  --line:#e5e0d5;--accent:#c99143;--accent-soft:#f3e8d5;
+  --green:#6e8874;--red:#aa6c60;--shadow:0 12px 34px rgba(42,38,30,.065);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:26px 28px 70px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:42px;height:42px;border-radius:13px;background:#282824;color:#fffdf8;display:grid;place-items:center;font-family:"Klee One",cursive;font-size:24px}
+.brand h1{margin:0;font-family:"Noto Serif TC",serif;font-size:21px}.brand p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.top-actions{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:9px 14px}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.nav{display:flex;gap:3px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.nav button{border:0;background:transparent;padding:11px 18px;color:var(--muted);border-bottom:2px solid transparent}
+.nav button.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+
+.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:20px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:21px;box-shadow:var(--shadow)}
+.eyebrow{font-size:10px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase}
+.card h2{font-family:"Noto Serif TC",serif;font-size:16px;margin:5px 0 15px}
+
+.datebar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.datebar button{border:0;background:none;color:var(--muted);font-size:23px;padding:3px 8px}
+.datebar strong{font-family:"Noto Serif TC",serif;font-size:18px}
+
+/* iPad Pencil diary mode: prevent Safari page scrolling/selection from stealing palm touches */
+html.diary-active, html.diary-active body{overscroll-behavior:none;}
+html.diary-active body{-webkit-user-select:none;user-select:none;}
+html.diary-active .app{-webkit-user-select:none;user-select:none;}
+html.diary-active .view.active{touch-action:none;-webkit-touch-callout:none;}
+.paper-shell{position:relative;border:1px solid #e8e1d3;border-radius:16px;overflow:hidden;background:#fffdf8;touch-action:none;}
+#paper{
+  touch-action:none;
+  -ms-touch-action:none;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:contain;
+  cursor:crosshair;
+  display:block;
+ display:block;width:100%;height:min(68vh,680px);min-height:500px;touch-action:none;
+ background:
+ repeating-linear-gradient(to bottom,#fffdf8 0,#fffdf8 35px,#e7e0d3 36px,#fffdf8 37px);
+}
+.paper-tools{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;border-top:1px solid var(--line);background:rgba(255,253,248,.94)}
+.tool-group{display:flex;gap:7px;align-items:center}
+.tool{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-size:11px}
+.tool.active{background:var(--accent-soft);border-color:#dcc49e}
+.file-input{display:none}
+.hand-note{font-family:"Klee One",cursive;color:#31506c;font-size:12px}
+
+.ai-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
+.status{font-size:11px;color:var(--muted)}
+.status b{color:var(--green)}
+.notice{font-size:11px;color:var(--muted);line-height:1.65;margin-top:8px}
+
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{border:1px solid var(--line);border-radius:14px;padding:14px}
+.metric small{color:var(--muted);font-size:10px}.metric strong{display:block;font-size:23px;margin-top:5px}
+.expense-list{margin-top:13px}
+.expense{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.icon{width:37px;height:37px;border-radius:12px;background:#f0eadf;display:grid;place-items:center;font-size:17px;flex:0 0 auto}
+.info{flex:1}.info strong{display:block;font-size:13px}.info span{font-size:10px;color:var(--muted)}
+.amount{text-align:right;font-weight:700;font-size:13px}.amount small{display:block;color:var(--muted);font-weight:400;font-size:9px}
+.ai-box{margin-top:14px;padding:13px 14px;border:1px dashed #d7c6a7;background:#fbf5e9;border-radius:14px;font-size:11px;line-height:1.75}
+
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:4px 0 13px}
+.section-title h2{margin:0}
+.filters{display:flex;gap:7px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:7px 10px;font-size:11px}
+.chip.active{background:var(--accent-soft);border-color:#dcc49e}
+
+.chart-wrap{height:260px;position:relative}
+.chart-wrap canvas{width:100%;height:100%}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%}
+
+.detail-head{display:grid;grid-template-columns:1fr auto;gap:15px;align-items:end;margin-bottom:14px}
+.detail-total{font-family:"Noto Serif TC",serif;font-size:28px}
+.detail-count{font-size:11px;color:var(--muted)}
+.bar{height:7px;background:#eee9df;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:12px 7px;border-bottom:1px solid var(--line)}
+th{font-size:10px;color:var(--muted);font-weight:500}.right{text-align:right}
+.pill{font-size:9px;padding:3px 6px;border-radius:7px;background:#eee9df;color:#69675f}
+.clickable{cursor:pointer}.clickable:hover{background:#fbf8f1}
+
+.calendar-note{font-size:11px;color:var(--muted);margin-top:10px}
+
+.modal{position:fixed;inset:0;background:rgba(25,24,20,.34);display:none;place-items:center;padding:18px;z-index:10}.modal.open{display:grid}
+.modal-card{width:min(520px,100%);background:var(--paper);border-radius:20px;padding:21px;box-shadow:0 28px 75px rgba(0,0,0,.2)}
+.form{display:grid;gap:11px}.form label{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}
+.form input,.form select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;background:#fffdf8}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+
+@media(max-width:850px){.app{padding:17px}.grid{grid-template-columns:1fr}}
+@media(max-width:560px){.app{padding:11px}.nav button{padding:10px 9px;font-size:12px}.card{padding:15px}.form-grid{grid-template-columns:1fr}.top-actions .btn{font-size:11px}.detail-head{grid-template-columns:1fr}}
+</style>
+
+<style>
+/* AnLedger V1.1 — full diary workspace + cat companion */
+.v10-diary-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.45fr);gap:18px;align-items:start}
+.v10-diary-main{min-width:0}
+.v10-cat-card{position:sticky;top:18px;overflow:hidden;background:linear-gradient(180deg,#fffdf8,#fbf4e7);border:1px solid #e7dfd1;border-radius:22px;box-shadow:var(--shadow);padding:16px}
+.v10-cat-stage{position:relative;border-radius:18px;background:#f7eddd;min-height:210px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.v10-cat-stage:after{content:"";position:absolute;left:12%;right:12%;bottom:12px;height:24px;border-radius:50%;background:rgba(117,82,42,.12);filter:blur(5px)}
+.v10-cat-img{width:100%;max-width:330px;display:block;position:relative;z-index:1;animation:v10catfloat 3.6s ease-in-out infinite;transform-origin:center bottom}
+.v10-cat-card:hover .v10-cat-img{animation-duration:2.2s}
+@keyframes v10catfloat{0%,100%{transform:translateY(2px) rotate(-.5deg)}50%{transform:translateY(-7px) rotate(.5deg)}}
+.v10-cat-msg{padding:13px 4px 5px;font-size:12px;line-height:1.7;color:#655f56}
+.v10-cat-msg strong{color:#2f2c27}
+.v10-cat-actions{display:flex;gap:7px;margin-top:10px}
+.v10-cat-actions button{flex:1;border:1px solid #e2d7c5;background:#fffdf8;border-radius:10px;padding:8px;font-size:11px;color:#5e584f}
+.v10-cat-actions button:hover{background:#f4eadb}
+.v10-pagebar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 12px}
+.v10-page-controls{display:flex;align-items:center;gap:6px}
+.v10-page-controls button{border:1px solid var(--line);background:#fffdf8;border-radius:9px;padding:6px 9px;color:#5d5951}
+.v10-page-label{font-size:11px;color:var(--muted);min-width:72px;text-align:center}
+.v10-add-page{border:1px solid #ddcaa8!important;background:#fbf1df!important;color:#795f37!important}
+.v10-analysis-panel{margin-top:14px}
+.v10-live-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#6e8874;background:#edf3ee;border-radius:99px;padding:4px 8px}
+.v10-live-dot{width:6px;height:6px;border-radius:50%;background:#6e8874;animation:v10pulse 1.5s infinite}
+@keyframes v10pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.v10-analysis-list{margin-top:10px;display:grid;gap:7px}
+.v10-analysis-item{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;padding:8px 9px;border:1px solid #eadfce;border-radius:11px;background:#fffdf8;font-size:11px}
+.v10-analysis-item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.v10-analysis-item b{font-size:11px}
+.v10-empty{color:var(--muted);font-size:11px;padding:8px 0}
+.v10-cat-tip{margin-top:10px;font-family:"Klee One",cursive;color:#31506c;font-size:11px;text-align:center}
+/* Do not lock the whole diary page: only the canvas is a drawing surface. */
+html.diary-active body,html.diary-active .app{ -webkit-user-select:auto; user-select:auto; }
+html.diary-active .view.active{touch-action:auto;-webkit-touch-callout:default}
+.paper-shell{touch-action:none;overscroll-behavior:contain}
+@media(max-width:900px){.v10-diary-layout{grid-template-columns:1fr}.v10-cat-card{position:relative;top:auto}.v10-cat-stage{min-height:160px}.v10-cat-img{max-width:280px}}
+</style>
+
+</head>
+<body>
+<style>.app{display:none}.app.v03-open{display:block}</style>
+
+<!-- V0.4 Dashboard / Home -->
+<section id="dashboardV03" class="v03-dashboard">
+  <div class="v03-topbar">
+    <div>
+      <div class="v03-brand">AnLedger</div>
+      <div class="v03-sub">一本會自己幫你記帳的生活日記</div>
+    </div>
+    <div class="v03-date">2026 / 09 / 19</div>
+  </div>
+
+  <div class="v03-grid">
+    <!-- 左半：消費分類 -->
+    <aside class="v03-panel v03-categories">
+      <div class="v03-panel-title">消費分類</div>
+      <div class="v03-panel-note">點擊分類查看完整明細</div>
+      <div class="v03-cat-list">
+        <button onclick="v03OpenCategory('餐飲')"><span>🍜</span><b>餐飲</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('交通')"><span>🚆</span><b>交通</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('購物')"><span>🛍️</span><b>購物</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('生活')"><span>🏠</span><b>生活</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('娛樂')"><span>🎮</span><b>娛樂</b><em>$0</em></button>
+        <button onclick="v03OpenCategory('其他')"><span>✦</span><b>其他</b><em>$0</em></button>
+      </div>
+    </aside>
+
+    <!-- 中間：本月大摘要 + 手寫日記 -->
+    <main class="v03-center">
+      <section class="v03-panel v03-month">
+        <div class="v03-panel-title">本月花費總額</div>
+        <div class="v03-total">$0</div>
+        <div class="v03-meta">2026 年 9 月 · 尚無一般消費</div>
+        <div class="v03-mini-row">
+          <span>平均每日</span><strong>$0</strong>
+          <span>最大項目</span><strong>尚無資料</strong>
+        </div>
+      </section>
+
+      <button class="v03-diary-card" onclick="v03OpenDiary()">
+        <div class="v03-diary-icon">✍</div>
+        <div class="v03-diary-copy">
+          <div class="v03-diary-label">手寫日記</div>
+          <div class="v03-diary-desc">直接用 Apple Pencil 寫下今天的生活</div>
+        </div>
+        <div class="v03-arrow">→</div>
+      </button>
+    </main>
+
+    <!-- 右半：Today + 帳務 / 分析 -->
+    <aside class="v03-panel v03-right">
+      <section class="v03-today">
+        <div class="v03-eyebrow">TODAY</div>
+        <div class="v03-panel-title">今日摘要</div>
+        <div class="v03-today-total">$0</div>
+        <div class="v03-today-count">2026 / 09 / 19 · 尚無消費</div>
+
+        <div class="v03-tx v07-empty-tx">
+          <div><span>○</span><label>今天還沒有消費紀錄</label><b>—</b></div>
+        </div>
+
+        <button class="v03-more" onclick="v03OpenToday()">查看今日明細 →</button>
+      </section>
+
+      <div class="v03-right-links">
+        <button class="v03-link-card" onclick="v03OpenLedger()">
+          <span class="v03-link-icon">▤</span>
+          <span><b>帳務</b><small>查看所有收支與交易</small></span>
+          <i>→</i>
+        </button>
+        <button class="v03-link-card" onclick="v03OpenAnalysis()">
+          <span class="v03-link-icon">◌</span>
+          <span><b>分析</b><small>查看趨勢、分類與統計</small></span>
+          <i>→</i>
+        </button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<div class="app">
+<header>
+  <div class="brand">
+    <div class="logo">i</div>
+    <div><div class="v05-legacy-head">
+  <h1>AnLedger</h1>
+  <button class="v05-home-btn" onclick="v05GoHome()" aria-label="回首頁">⌂ 首頁</button>
+</div><p>一本會自己幫你記帳的生活日記</p></div>
+  </div>
+  <div class="top-actions">
+    <button class="btn" onclick="openExpense()">＋ 手動記帳</button>
+  <button class="btn" onclick="openAISettings()">⚙️ AI 設定</button></div>
+</header>
+
+<nav class="nav">
+  <button class="active" data-view="diary">📖 日記</button>
+  <button data-view="ledger">◫ 帳務</button>
+  <button data-view="analysis">◌ 分析</button>
+</nav>
+
+<section id="diary" class="view active">
+<div class="v10-diary-layout">
+  <div class="v10-diary-main">
+    <div class="card">
+      <div class="datebar">
+        <button onclick="changeDay(-1)">‹</button>
+        <strong id="dateTitle">2026 / 09 / 19　SAT</strong>
+        <button onclick="changeDay(1)">›</button>
+      </div>
+
+      <div class="v10-pagebar">
+        <div class="v10-page-controls">
+          <button onclick="changeDiaryPage(-1)">‹</button>
+          <span class="v10-page-label" id="pageLabel">第 1 頁</span>
+          <button onclick="changeDiaryPage(1)">›</button>
+          <button class="v10-add-page" onclick="addDiaryPage()">＋ 新增一頁</button>
+        </div>
+        <span class="v10-live-badge"><i class="v10-live-dot"></i> 即時分析</span>
+      </div>
+
+      <div class="paper-shell">
+        <canvas id="paper"></canvas>
+        <div class="paper-tools">
+          <div class="tool-group">
+            <button class="tool active" id="penBtn" onclick="setTool('pen')">✎ 筆</button>
+            <button class="tool" id="eraserBtn" onclick="setTool('eraser')">⌫ 橡皮擦</button>
+            <button class="tool" onclick="clearPaper()">清除本頁</button>
+            <label class="tool">📷 匯入手寫<input class="file-input" type="file" accept="image/*" onchange="importImage(event)"></label>
+          </div>
+          <span class="hand-note">手掌可自然放著寫 · 原始筆跡保留</span>
+        </div>
+      </div>
+
+      <div class="ai-row">
+        <span class="status">● <b id="saveStatus">今天還沒有手寫內容 · 可直接開始</b></span>
+        <button class="btn primary" onclick="analyzeDiary()">🤖 執行分析</button>
+      </div>
+      <div class="notice">寫完一段後會自動分析目前頁面；手動「執行分析」會重新分析今天全部頁面。辨識出的花費會寫入帳務，可在總帳確認。</div>
+    </div>
+  </div>
+
+  <aside class="v10-cat-card">
+    <div class="v10-cat-stage">
+      <img class="v10-cat-img" src="./icons/cat-mascot.png" alt="AnLedger 橘貓助手">
+    </div>
+    <div class="v10-cat-msg" id="catMessage"><strong>橘橘：</strong> 今天想記什麼？我幫你把花費抓出來。</div>
+    <div class="v10-cat-actions">
+      <button onclick="catReact('encourage')">🐾 鼓勵我</button>
+      <button onclick="catReact('summary')">🧾 看摘要</button>
+    </div>
+    <div class="v10-cat-tip">「先寫就好，記帳交給我。」</div>
+
+    <div class="card v10-analysis-panel" style="box-shadow:none;margin-top:14px;padding:14px">
+      <div class="eyebrow">LIVE AI</div>
+      <h2 style="margin-bottom:8px">即時辨識</h2>
+      <div class="ai-box" id="aiBox">寫下「午餐 120」這類內容後，分析結果會出現在這裡。</div>
+      <div class="v10-analysis-list" id="liveAnalysisList"><div class="v10-empty">目前尚無辨識項目</div></div><div id="aiReview" class="v11-review" style="display:none"></div>
+    </div>
+  </aside>
+</div>
+<section id="ledger" class="view">
+  <div class="card">
+    <div class="section-title">
+      <h2>個人總帳</h2>
+      <div class="filters">
+        <button class="chip active">2026 年 09 月</button>
+        <button class="chip">全部</button>
+        <button class="chip">TWD</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>日期</th><th>分類</th><th>項目</th><th>付款方式</th><th class="right">金額</th></tr></thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="analysis" class="view">
+  <div class="grid">
+    <div class="card">
+      <div class="eyebrow">Monthly</div><h2>本月消費結構</h2>
+      <div class="chart-wrap"><canvas id="pie"></canvas></div>
+      <div class="legend" id="pieLegend"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Trend</div><h2>每月花費趨勢</h2>
+      <div class="chart-wrap"><canvas id="line"></canvas></div>
+      <div class="notice">目前只有 2026/09 有實際資料，因此圖表不會虛構 4～8 月資料。</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="section-title">
+      <h2>分類分析</h2><span class="pill">點擊分類查看完整明細</span>
+    </div>
+    <div id="categoryRows"></div>
+  </div>
+</section>
+
+<section id="categoryDetail" class="view">
+  <div class="card">
+    <div class="section-title">
+      <h2 id="detailTitle">🍜 餐飲</h2>
+      <button class="btn" onclick="goAnalysis()">← 返回分析</button>
+    </div>
+    <div class="filters" style="margin-bottom:16px">
+      <button class="chip active" onclick="setRange('month',this)">本月</button>
+      <button class="chip" onclick="setRange('week',this)">本週</button>
+      <button class="chip" onclick="setRange('3m',this)">近3個月</button>
+      <button class="chip" onclick="setRange('custom',this)">自訂</button>
+    </div>
+    <div class="detail-head">
+      <div>
+        <div class="eyebrow" id="detailRange">2026/09/01 — 2026/09/19</div>
+        <div class="detail-total" id="detailTotal">$50</div>
+        <div class="detail-count" id="detailCount">1 筆消費</div>
+        <div class="bar"><i id="detailBar" style="width:100%"></i></div>
+      </div>
+      <div class="metric"><small>付款方式</small><strong id="detailPay">未指定</strong></div>
+    </div>
+    <div id="detailBreakdown"></div>
+    <div style="margin-top:22px">
+      <div class="eyebrow">Transaction History</div>
+      <h2 style="margin-top:5px">逐筆明細</h2>
+      <table>
+        <thead><tr><th>日期</th><th>項目</th><th>付款方式</th><th class="right">金額</th></tr></thead>
+        <tbody id="detailBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<div class="modal" id="aiSettingsModal">
+<div class="modal-card">
+  <div class="section-title"><h2>AI 分析設定</h2><button class="btn" onclick="closeAISettings()">×</button></div>
+  <div class="form">
+    <div><label>OpenAI API Key</label><div class="ai-key-row"><input id="aiApiKey" type="password" placeholder="sk-..."><button class="btn" onclick="toggleAIKey()">顯示</button></div></div>
+    <div><label>模型</label><input id="aiModel" value="gpt-5.6-luna"></div>
+    <div><label><input id="aiRealtime" type="checkbox" checked style="width:auto;margin-right:6px">寫完一段後自動即時分析</label></div>
+    <div><label><input id="aiRemember" type="checkbox" style="width:auto;margin-right:6px">在這台裝置保存 API Key</label></div>
+  </div>
+  <div class="ai-settings-note">API Key 會直接從你的瀏覽器送到 OpenAI。若不勾選「保存」，只留在本次瀏覽工作階段。ChatGPT 訂閱與 API 計費是分開的。
+  </div>
+  <div class="ai-status"><i class="ai-status-dot" id="aiStatusDot"></i><span id="aiStatusText">尚未設定 AI</span></div>
+  <div class="modal-actions"><button class="btn" onclick="clearAIKey()">清除 Key</button><button class="btn primary" onclick="saveAISettings()">儲存並測試</button></div>
+</div></div>
+<div class="modal" id="modal">
+<div class="modal-card">
+  <div class="section-title"><h2>新增一筆記帳</h2><button class="btn" onclick="closeExpense()">×</button></div>
+  <div class="form">
+    <div><label>項目</label><input id="fItem" placeholder="例如：午餐"></div>
+    <div class="form-grid">
+      <div><label>分類</label><select id="fCat"><option>餐飲</option><option>交通</option><option>購物</option><option>娛樂</option><option>生活</option><option>旅遊</option><option>投資</option><option>其他</option></select></div>
+      <div><label>金額</label><input id="fAmount" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-grid">
+      <div><label>幣別</label><select id="fCurrency"><option>TWD</option><option>JPY</option><option>USD</option><option>EUR</option></select></div>
+      <div><label>付款方式</label><select id="fPay"><option>未指定</option><option>現金</option><option>信用卡</option><option>銀行轉帳</option><option>行動支付</option></select></div>
+    </div>
+  </div>
+  <div class="modal-actions"><button class="btn" onclick="closeExpense()">取消</button><button class="btn primary" onclick="saveExpense()">加入總帳</button></div>
+</div></div>
+
+<script>
+const state={
+ date:new Date(),
+ selectedCategory:'餐飲',
+ range:'month',
+ expenses:[],
+ actualMonths:{}
+};
+const icons={餐飲:'☕',交通:'🚆',購物:'🛍️',娛樂:'◉',生活:'⌂',旅遊:'✦',投資:'↗',其他:'•'};
+const EXPENSE_STORE='anledger_v11_expenses';
+const AI_KEY_STORE='anledger_v11_ai_key';
+const AI_SESSION_STORE='anledger_v11_ai_session';
+function persistExpenses(){try{localStorage.setItem(EXPENSE_STORE,JSON.stringify(state.expenses));}catch(e){}}
+function loadExpenses(){try{const raw=localStorage.getItem(EXPENSE_STORE);if(raw)state.expenses=JSON.parse(raw)||[];}catch(e){state.expenses=[];}rebuildActualMonths();}
+function rebuildActualMonths(){state.actualMonths={};state.expenses.filter(x=>x.kind==='expense'&&x.currency==='TWD').forEach(x=>{const m=String(x.date).slice(0,7);state.actualMonths[m]=(state.actualMonths[m]||0)+Number(x.amount||0);});}
+function getAIKey(){return sessionStorage.getItem(AI_SESSION_STORE)||localStorage.getItem(AI_KEY_STORE)||'';}
+function aiRealtimeEnabled(){return localStorage.getItem('anledger_v11_ai_realtime')!=='0';}
+function normalizeCat(v){const s=String(v||'其他');const map={'餐飲':'餐飲','飲食':'餐飲','吃飯':'餐飲','交通':'交通','購物':'購物','服飾':'購物','娛樂':'娛樂','生活':'生活','日常':'生活','旅遊':'旅遊','旅行':'旅遊','投資':'投資','其他':'其他'};return map[s]||'其他';}
+
+
+function money(n,c='TWD'){return (c==='TWD'?'$':c+' ')+Number(n).toLocaleString('zh-TW')}
+function renderDashboard(){
+ const ex=state.expenses.filter(x=>x.kind==='expense');
+ const total=ex.reduce((a,b)=>a+(b.currency==='TWD'?b.amount:0),0);
+ const today=dateId();
+ const todayEx=ex.filter(x=>x.date===today);
+ const todayTotal=todayEx.reduce((a,b)=>a+(b.currency==='TWD'?b.amount:0),0);
+ const cats={};ex.forEach(x=>cats[x.cat]=(cats[x.cat]||0)+(x.currency==='TWD'?x.amount:0));
+ document.querySelector('.v03-total').textContent=money(total);
+ document.querySelector('.v03-meta').textContent=`${state.date.getFullYear()} 年 ${state.date.getMonth()+1} 月 · ${ex.length} 筆一般消費`;
+ document.querySelectorAll('.v03-cat-list button').forEach(btn=>{
+   const name=btn.querySelector('b')?.textContent;
+   const em=btn.querySelector('em');
+   if(em) em.textContent=money(cats[name]||0);
+ });
+ const avg=document.querySelector('.v03-mini-row strong');
+ if(avg) avg.textContent=money(Math.round(total/Math.max(new Date().getDate(),1)));
+ const max=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+ const maxEl=document.querySelectorAll('.v03-mini-row strong')[1];
+ if(maxEl) maxEl.textContent=max?`${max[0]} ${money(max[1])}`:'尚無資料';
+ document.querySelector('.v03-today-total').textContent=money(todayTotal);
+ document.querySelector('.v03-today-count').textContent=`${today.replaceAll('-',' / ')} · ${todayEx.length?todayEx.length+' 筆':'尚無消費'}`;
+ const tx=document.querySelector('.v03-tx');
+ if(tx){
+   tx.innerHTML=todayEx.length ? todayEx.slice(0,4).map(x=>`<div><span>${x.icon||icons[x.cat]}</span><label>${x.item}</label><b>${money(x.amount,x.currency)}</b></div>`).join('') :
+   '<div><span>○</span><label>今天還沒有消費紀錄</label><b>—</b></div>';
+ }
+}
+function render(){
+ const todayId=dateId();
+ const ex=state.expenses.filter(x=>x.kind==='expense'&&x.date===todayId);
+ const inv=state.expenses.filter(x=>x.kind==='investment'&&x.date===todayId);
+ document.getElementById('todaySpend').textContent=money(ex.reduce((a,b)=>a+b.amount,0));
+ document.getElementById('todayInvest').textContent=money(inv.reduce((a,b)=>a+b.amount,0));
+ document.getElementById('todayList').innerHTML=ex.map(x=>`
+ <div class="expense clickable" onclick="openCategory('${x.cat}')">
+   <div class="icon">${x.icon||icons[x.cat]}</div>
+   <div class="info"><strong>${x.item}</strong><span>${x.cat} · ${x.pay}</span></div>
+   <div class="amount">${money(x.amount,x.currency)}<small>${x.currency}</small></div>
+ </div>`).join('');
+ document.getElementById('ledgerBody').innerHTML=state.expenses.map(x=>`
+ <tr class="clickable" onclick="openCategory('${x.cat}')">
+   <td>${x.date.replaceAll('-','/')}</td><td>${icons[x.cat]||'•'} ${x.cat}</td>
+   <td>${x.item}${x.kind==='investment'?' <span class="pill">投資</span>':''}</td>
+   <td>${x.pay}</td><td class="right">${money(x.amount,x.currency)}</td>
+ </tr>`).join('');
+ const pays={};ex.forEach(x=>pays[x.pay]=(pays[x.pay]||0)+x.amount);
+ document.getElementById('paymentSummary').innerHTML=Object.entries(pays).map(([k,v])=>`
+ <div class="expense"><div class="icon">${k==='現金'?'💵':k==='信用卡'?'💳':k==='銀行轉帳'?'🏦':'◌'}</div>
+ <div class="info"><strong>${k}</strong><span>本日一般消費</span></div><div class="amount">${money(v)}</div></div>`).join('');
+ renderCategories(ex);drawPie();drawLine();renderDashboard();
+}
+function renderCategories(ex){
+ const sums={};ex.forEach(x=>sums[x.cat]=(sums[x.cat]||0)+x.amount);
+ const total=ex.reduce((a,b)=>a+b.amount,0)||1;
+ document.getElementById('categoryRows').innerHTML=Object.entries(sums).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+ <div class="expense clickable" onclick="openCategory('${k}')">
+   <div class="icon">${icons[k]||'•'}</div>
+   <div class="info"><strong>${k}</strong><span>${Math.round(v/total*100)}% · ${ex.filter(x=>x.cat===k).length} 筆</span></div>
+   <div class="amount">${money(v)}　›</div>
+ </div>`).join('');
+}
+function setupCanvas(canvas){
+ const dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
+ canvas.width=w*dpr;canvas.height=h*dpr;
+ const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return [ctx,w,h];
+}
+function drawPie(){
+ const c=document.getElementById('pie');if(!c)return;const [ctx,w,h]=setupCanvas(c);
+ const ex=state.expenses.filter(x=>x.kind==='expense'),s={};ex.forEach(x=>s[x.cat]=(s[x.cat]||0)+x.amount);
+ const vals=Object.entries(s),total=vals.reduce((a,b)=>a+b[1],0)||1,cx=w/2,cy=h/2,r=Math.min(w,h)*.35;
+ let a=-Math.PI/2;ctx.lineWidth=28;
+ const cols=['#c99143','#718b72','#8b8fa3','#b87868','#9d8ab0'];
+ vals.forEach(([k,v],i)=>{const da=v/total*Math.PI*2;ctx.beginPath();ctx.strokeStyle=cols[i%cols.length];ctx.arc(cx,cy,r,a,a+da);ctx.stroke();a+=da});
+ ctx.textAlign='center';ctx.fillStyle='#282824';ctx.font='700 23px "Noto Sans TC"';ctx.fillText('$'+total.toLocaleString(),cx,cy+1);
+ ctx.font='11px "Noto Sans TC"';ctx.fillStyle='#858279';ctx.fillText('本月消費',cx,cy+21);
+ document.getElementById('pieLegend').innerHTML=vals.map(([k,v],i)=>`<span><i class="dot" style="background:${cols[i%cols.length]}"></i>${k} ${Math.round(v/total*100)}%</span>`).join('');
+}
+function drawLine(){
+ const c=document.getElementById('line');if(!c)return;const [ctx,w,h]=setupCanvas(c);
+ const entries=Object.entries(state.actualMonths).sort(), vals=entries.map(x=>x[1]);
+ const pad={l:52,r:12,t:22,b:34}, max=Math.max(...vals,1000)*1.25;
+ ctx.font='10px "Noto Sans TC"';ctx.textAlign='right';ctx.fillStyle='#858279';ctx.strokeStyle='#e5e0d5';ctx.lineWidth=1;
+ const ticks=4;
+ for(let i=0;i<=ticks;i++){
+   const value=max*(1-i/ticks),y=pad.t+(h-pad.t-pad.b)*i/ticks;
+   ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+   ctx.fillText('$'+Math.round(value).toLocaleString(),pad.l-7,y+3);
+ }
+ ctx.textAlign='center';
+ if(entries.length===1){
+   const x=w/2,y=pad.t+(h-pad.t-pad.b)*(1-vals[0]/max);
+   ctx.fillStyle='#c99143';ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#858279';ctx.fillText('9月',x,h-12);
+   ctx.fillStyle='#282824';ctx.font='600 11px "Noto Sans TC"';ctx.fillText('$'+vals[0].toLocaleString(),x,y-13);
+   return;
+ }
+ ctx.strokeStyle='#282824';ctx.lineWidth=2;ctx.beginPath();
+ entries.forEach(([m,v],i)=>{const x=pad.l+(w-pad.l-pad.r)*i/(entries.length-1),y=pad.t+(h-pad.t-pad.b)*(1-v/max);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+}
+function diaryHasContent(){return allDiaryPages().length>0;}
+function analysisTime(){return new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});}
+function setAnalysisStatus(msg){const el=document.getElementById('saveStatus');if(el)el.textContent=msg;}
+function getCurrentPageImage(){return paper.toDataURL('image/jpeg',0.62);}
+function parseAIText(data){let text=data?.output_text||'';if(!text&&Array.isArray(data?.output)){for(const o of data.output){for(const c of (o.content||[])){if(typeof c.text==='string')text+=c.text;}}}text=String(text||'').trim();text=text.replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a>=0&&b>a)text=text.slice(a,b+1);return JSON.parse(text);}
+function buildAIPrompt(mode,pageCount){return `你是 AnLedger 的記帳助理。請閱讀使用者的繁體中文手寫日記圖片，辨識其中明確提到的消費/收入/投資金額。不要猜測看不清楚的數字；不確定就不要建立交易。
+
+只回傳 JSON，不要 Markdown：{\"summary\":\"一句話摘要\",\"expenses\":[{\"item\":\"項目\",\"amount\":120,\"currency\":\"TWD\",\"category\":\"餐飲\",\"payment\":\"未指定\",\"confidence\":0.95,\"note\":\"\"}]}
+
+分類只能是：餐飲、交通、購物、娛樂、生活、旅遊、投資、其他。幣別只能是 TWD/JPY/USD/EUR 或圖片明確出現的幣別。mode=${mode}；今天共 ${pageCount} 頁。`;}
+async function callOpenAI(pages,mode){const key=getAIKey();if(!key)throw new Error('NO_API_KEY');const model=(localStorage.getItem('anledger_v11_model')||'gpt-5.6-luna').trim();const content=[{type:'input_text',text:buildAIPrompt(mode,pages.length)}];for(const p of pages){content.push({type:'input_text',text:`第 ${p.page} 頁：`});content.push({type:'input_image',image_url:p.image});}
+ const resp=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,input:[{role:'user',content}],max_output_tokens:1200})});
+ if(!resp.ok){const t=await resp.text();throw new Error('API '+resp.status+' '+t.slice(0,180));}return parseAIText(await resp.json());}
+function renderLiveResult(result){const list=document.getElementById('liveAnalysisList');if(!list)return;const items=Array.isArray(result?.expenses)?result.expenses:[];if(items.length){list.innerHTML=items.slice(0,8).map(x=>`<div class="v10-analysis-item"><span>${icons[normalizeCat(x.category)]||'🧾'}</span><div><b>${x.item||'未命名'}</b><small>${normalizeCat(x.category)} · ${(x.confidence==null?'':Math.round(Number(x.confidence)*100)+'%')}</small></div><b>${x.currency||'TWD'} ${Number(x.amount||0).toLocaleString()}</b></div>`).join('');}else list.innerHTML='<div class="v10-empty">沒有辨識到明確的金額。</div>';document.getElementById('aiBox').innerHTML='<b>🤖 AI 分析完成</b><br>'+String(result?.summary||'已更新目前辨識結果。');}
+function mergeAIExpenses(items,mode,pageIndex){const date=dateId();state.expenses=state.expenses.filter(x=>!(x.source==='ai'&&x.date===date&&((mode==='realtime'&&x.sourcePage===pageIndex)||mode==='manual')));const clean=(items||[]).filter(x=>Number(x.amount)>0).map((x,i)=>{const cat=normalizeCat(x.category);return{id:`ai_${date}_${pageIndex}_${Date.now()}_${i}`,source:'ai',sourcePage:pageIndex,date,cat,item:String(x.item||'未命名'),amount:Number(x.amount),currency:String(x.currency||'TWD').toUpperCase(),pay:String(x.payment||'未指定'),icon:icons[cat],kind:cat==='投資'?'investment':'expense',confidence:Number(x.confidence||0),note:String(x.note||'')}});state.expenses.push(...clean);persistExpenses();rebuildActualMonths();return clean;}
+function showReview(items){const box=document.getElementById('aiReview');if(!box)return;if(!items.length){box.style.display='none';return;}box.style.display='block';box.innerHTML='<b>辨識結果（可先確認）</b>'+items.slice(0,6).map((x,i)=>`<div class="v11-review-row"><span>${x.item||'未命名'}</span><input id="reviewAmt${i}" type="number" value="${Number(x.amount)||0}"><select id="reviewCat${i}">${Object.keys(icons).map(c=>`<option ${normalizeCat(x.category)===c?'selected':''}>${c}</option>`).join('')}</select></div>`).join('')+'<div style="margin-top:8px;text-align:right"><button class="btn primary" onclick="confirmAIReview('+items.slice(0,6).length+')">✓ 確認寫入帳務</button></div>';box._items=items;}
+function confirmAIReview(n){const box=document.getElementById('aiReview');const items=box?box._items:[];if(!items.length)return;const mapped=items.slice(0,n).map((x,i)=>({...x,amount:Number(document.getElementById('reviewAmt'+i)?.value||x.amount),category:document.getElementById('reviewCat'+i)?.value||x.category}));mergeAIExpenses(mapped,'manual-confirm',diaryPage+1);box.style.display='none';render();setAnalysisStatus('✓ 已確認並寫入總帳 · '+analysisTime());}
+async function runAI(mode='realtime'){const pages=mode==='realtime'?[{page:diaryPage+1,image:getCurrentPageImage()}]:allDiaryPages();if(!pages.length){setAnalysisStatus('今天還沒有手寫內容');return null;}if(!getAIKey()){setAnalysisStatus('已保存 · 請先到「AI 設定」連接分析引擎');return null;}setAnalysisStatus(mode==='realtime'?'🤖 即時分析中…':'🤖 正在分析全部日記…');try{const result=await callOpenAI(pages,mode);renderLiveResult(result);const allItems=Array.isArray(result?.expenses)?result.expenses:[];const confident=allItems.filter(x=>Number(x.confidence||0)>=0.85);const uncertain=allItems.filter(x=>Number(x.confidence||0)<0.85);mergeAIExpenses(confident,mode,diaryPage+1);showReview(uncertain);setAnalysisStatus(`✓ 已分析 · 自動記入 ${confident.length} 筆${uncertain.length?' · '+uncertain.length+' 筆待確認':''} · `+analysisTime());render();return result;}catch(err){document.getElementById('aiBox').innerHTML='<b>🤖 分析暫停</b><br>'+String(err.message||'連線失敗')+'。原始筆跡已保存。';setAnalysisStatus('已保存 · AI 分析失敗，可重試');return null;}}
+function scheduleAutoAnalyze(){clearTimeout(autoAnalyzeTimer);if(!aiRealtimeEnabled())return;autoAnalyzeTimer=setTimeout(()=>{if(strokeDirty){strokeDirty=false;runAI('realtime');}},1800);}
+function analyzeDiary(){runAI('manual');}
+function openAISettings(){const key=getAIKey();document.getElementById('aiApiKey').value=key;document.getElementById('aiModel').value=localStorage.getItem('anledger_v11_model')||'gpt-5.6-luna';document.getElementById('aiRealtime').checked=aiRealtimeEnabled();document.getElementById('aiRemember').checked=!!localStorage.getItem(AI_KEY_STORE);updateAIStatus();document.getElementById('aiSettingsModal').classList.add('open');}
+function closeAISettings(){document.getElementById('aiSettingsModal').classList.remove('open');}
+function toggleAIKey(){const el=document.getElementById('aiApiKey');el.type=el.type==='password'?'text':'password';}
+function clearAIKey(){sessionStorage.removeItem(AI_SESSION_STORE);localStorage.removeItem(AI_KEY_STORE);document.getElementById('aiApiKey').value='';updateAIStatus();}
+function updateAIStatus(){const ok=!!getAIKey();const dot=document.getElementById('aiStatusDot'),tx=document.getElementById('aiStatusText');if(dot)dot.classList.toggle('on',ok);if(tx)tx.textContent=ok?'AI Key 已設定':'尚未設定 AI';}
+async function saveAISettings(){const key=document.getElementById('aiApiKey').value.trim(),model=document.getElementById('aiModel').value.trim()||'gpt-5.6-luna';if(!key){alert('請先輸入 OpenAI API Key');return;}if(document.getElementById('aiRemember').checked)localStorage.setItem(AI_KEY_STORE,key);else localStorage.removeItem(AI_KEY_STORE);sessionStorage.setItem(AI_SESSION_STORE,key);localStorage.setItem('anledger_v11_model',model);localStorage.setItem('anledger_v11_ai_realtime',document.getElementById('aiRealtime').checked?'1':'0');updateAIStatus();setAnalysisStatus('🤖 正在測試 AI 連線…');try{await callOpenAI([{page:1,image:getCurrentPageImage()}],'connection-test');alert('AI 連線成功，可以開始即時分析。');closeAISettings();setAnalysisStatus('✓ AI 已連線 · '+analysisTime());}catch(e){alert('AI 連線失敗：'+(e.message||e));setAnalysisStatus('AI 連線失敗，請檢查 Key / 模型 / 網路');}}
+function openCategory(cat){
+ state.selectedCategory=cat;
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+ document.getElementById('categoryDetail').classList.add('active');
+ renderDetail();
+}
+function renderDetail(){
+ const cat=state.selectedCategory;
+ document.getElementById('detailTitle').textContent=(icons[cat]||'•')+' '+cat;
+ const items=state.expenses.filter(x=>x.kind==='expense'&&x.cat===cat);
+ const total=items.reduce((a,b)=>a+b.amount,0);
+ document.getElementById('detailTotal').textContent=money(total);
+ document.getElementById('detailCount').textContent=items.length+' 筆消費';
+ document.getElementById('detailRange').textContent=`${state.date.getFullYear()}/${String(state.date.getMonth()+1).padStart(2,'0')}/01 — ${dateId().replaceAll('-','/')}`;
+ const pays={};items.forEach(x=>pays[x.pay]=(pays[x.pay]||0)+x.amount);
+ document.getElementById('detailPay').textContent=Object.keys(pays).join('、')||'未指定';
+ document.getElementById('detailBar').style.width=Math.min(100,Math.max(5,total/2590*100))+'%';
+ const subs={};items.forEach(x=>subs[x.item]=(subs[x.item]||0)+x.amount);
+ document.getElementById('detailBreakdown').innerHTML=Object.entries(subs).map(([k,v])=>`
+ <div class="expense"><div class="icon">${icons[cat]||'•'}</div><div class="info"><strong>${k}</strong><span>${Math.round(v/Math.max(total,1)*100)}% of ${cat}</span></div><div class="amount">${money(v)}</div></div>`).join('');
+ document.getElementById('detailBody').innerHTML=items.map(x=>`
+ <tr><td>${x.date.replaceAll('-','/')}</td><td>${x.item}</td><td>${x.pay}</td><td class="right">${money(x.amount,x.currency)}</td></tr>`).join('') || '<tr><td colspan="4" class="right">目前沒有資料</td></tr>';
+}
+function goAnalysis(){document.querySelector('[data-view="analysis"]').click()}
+function setRange(r,el){state.range=r;document.querySelectorAll('#categoryDetail .chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderDetail()}
+function openExpense(){document.getElementById('modal').classList.add('open')}
+function closeExpense(){document.getElementById('modal').classList.remove('open')}
+function saveExpense(){
+ const item=document.getElementById('fItem').value.trim(),amount=Number(document.getElementById('fAmount').value);
+ if(!item||!amount){alert('請輸入項目與金額');return}
+ const cat=document.getElementById('fCat').value;
+ state.expenses.push({id:'manual_'+Date.now(),source:'manual',date:dateId(),cat,item,amount,currency:document.getElementById('fCurrency').value,pay:document.getElementById('fPay').value,icon:icons[cat],kind:cat==='投資'?'investment':'expense'});
+ persistExpenses();
+ if(cat!=='投資'&&document.getElementById('fCurrency').value==='TWD')state.actualMonths['2026-09']=(state.actualMonths['2026-09']||0)+amount;
+ closeExpense();render();
+ document.getElementById('fItem').value='';document.getElementById('fAmount').value='';
+}
+function changeDay(n){
+ state.date.setDate(state.date.getDate()+n);
+ diaryPage=0;
+ const d=state.date,days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+ document.getElementById('dateTitle').textContent=`${d.getFullYear()} / ${String(d.getMonth()+1).padStart(2,'0')} / ${String(d.getDate()).padStart(2,'0')}　${days[d.getDay()]}`; const dashDate=document.querySelector('.v03-date'); if(dashDate) dashDate.textContent=`${d.getFullYear()} / ${String(d.getMonth()+1).padStart(2,'0')} / ${String(d.getDate()).padStart(2,'0')}`;
+ loadDiaryForDate();
+}
+function goView(id){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===id));
+ if(id==='analysis')setTimeout(()=>{drawPie();drawLine()},40);
+}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>goView(b.dataset.view)));
+
+/* AnLedger V1.1 — multi-page Apple Pencil diary + live AI hook */
+const paper=document.getElementById('paper');
+let ctx,writing=false,last=null,tool='pen',activePointerId=null;
+let pendingPoints=[],rafId=0,lastSaveAt=0;
+const DIARY_PREFIX='anledger_v10_diary_';
+let diaryPage=0;
+let diaryPageCounts={};
+let autoAnalyzeTimer=null,strokeDirty=false;
+
+function dateId(){ const d=state.date; return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function diaryKey(page=diaryPage){ return `${DIARY_PREFIX}${dateId()}_p${page+1}`; }
+function countKey(){ return `${DIARY_PREFIX}${dateId()}_count`; }
+function getPageCount(){ return Math.max(1, Number(localStorage.getItem(countKey())||1)); }
+function setPageCount(n){ localStorage.setItem(countKey(),String(Math.max(1,n))); }
+function updatePageLabel(){ const el=document.getElementById('pageLabel'); if(el) el.textContent=`第 ${diaryPage+1} 頁 / ${getPageCount()} 頁`; }
+function resizePaper(){
+ const old=document.createElement('canvas'); old.width=paper.width; old.height=paper.height;
+ if(paper.width&&paper.height){const oc=old.getContext('2d');oc.drawImage(paper,0,0);}
+ const dpr=Math.min(window.devicePixelRatio||1,3),w=paper.clientWidth,h=paper.clientHeight; if(!w||!h)return;
+ paper.width=Math.round(w*dpr); paper.height=Math.round(h*dpr);
+ ctx=paper.getContext('2d',{alpha:true,desynchronized:true}); ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.lineCap='round';ctx.lineJoin='round';ctx.imageSmoothingEnabled=true;
+ if(old.width&&old.height)ctx.drawImage(old,0,0,old.width,old.height,0,0,w,h);
+}
+function pos(e){const r=paper.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function pressureWidth(e){if(tool==='eraser')return 18;const p=(typeof e.pressure==='number'&&e.pressure>0)?e.pressure:.5;return 1.6+Math.min(.9,Math.max(0,p))*2.5;}
+function drawSegment(a,b,width){if(!ctx)return;ctx.strokeStyle='#29415b';ctx.lineWidth=width;ctx.globalCompositeOperation=tool==='eraser'?'destination-out':'source-over';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+function drawPending(){rafId=0;if(!pendingPoints.length)return;const pts=pendingPoints.splice(0,pendingPoints.length);let from=last;for(const item of pts){if(!from){from=item.p;continue;}drawSegment(from,item.p,item.w);from=item.p;}last=from;ctx.globalCompositeOperation='source-over';}
+function queuePoint(e){const events=typeof e.getCoalescedEvents==='function'?e.getCoalescedEvents():[e];for(const ev of events)pendingPoints.push({p:pos(ev),w:pressureWidth(ev)});if(!rafId)rafId=requestAnimationFrame(drawPending);}
+function saveDiary(){try{localStorage.setItem(diaryKey(),paper.toDataURL('image/png'));localStorage.setItem(countKey(),String(Math.max(getPageCount(),diaryPage+1)));lastSaveAt=performance.now();}catch(e){}}
+function loadDiaryForDate(){
+ resizePaper(); if(!ctx)return; ctx.clearRect(0,0,paper.clientWidth,paper.clientHeight); updatePageLabel();
+ const saved=localStorage.getItem(diaryKey());
+ if(saved){const img=new Image();img.onload=()=>{ctx.drawImage(img,0,0,paper.clientWidth,paper.clientHeight);setAnalysisStatus('已保存 · 可繼續書寫');};img.src=saved;}
+ else setAnalysisStatus(diaryPage===0?'今天還沒有手寫內容 · 可直接開始':'這一頁還沒有內容 · 可以繼續寫');
+}
+function changeDiaryPage(n){ const next=diaryPage+n; if(next<0)return; if(next>=getPageCount()){ if(n>0){setPageCount(next+1);} else return; } saveDiary(); diaryPage=next; loadDiaryForDate(); }
+function addDiaryPage(){ saveDiary(); diaryPage=getPageCount(); setPageCount(diaryPage+1); loadDiaryForDate(); setAnalysisStatus(`已新增第 ${diaryPage+1} 頁 · 可以繼續寫`); }
+function allDiaryPages(){const out=[];const count=getPageCount();for(let i=0;i<count;i++){const data=localStorage.getItem(diaryKey(i));if(data)out.push({page:i+1,image:data});}return out;}
+
+// Pencil input: only the canvas captures drawing. Other controls remain normal buttons.
+paper.addEventListener('pointerdown',e=>{
+ if(e.pointerType==='touch'){e.preventDefault();return;}
+ if(e.pointerType!=='pen'&&e.pointerType!=='pencil'&&e.pointerType!=='mouse')return;
+ if(writing)return; writing=true; activePointerId=e.pointerId; paper.setPointerCapture(e.pointerId); last=pos(e); pendingPoints=[]; drawSegment(last,last,pressureWidth(e)); setAnalysisStatus('正在書寫…'); e.preventDefault();
+},{passive:false});
+paper.addEventListener('pointermove',e=>{if(e.pointerType==='touch'){e.preventDefault();return;}if(!writing||e.pointerId!==activePointerId)return;queuePoint(e);e.preventDefault();},{passive:false});
+function finishStroke(e){if(e.pointerType==='touch'){e.preventDefault();return;}if(!writing||e.pointerId!==activePointerId)return;if(pendingPoints.length){if(rafId)cancelAnimationFrame(rafId);drawPending();}writing=false;activePointerId=null;last=null;ctx.globalCompositeOperation='source-over';saveDiary();strokeDirty=true;setAnalysisStatus('✓ 已保存 · 嘗試即時分析…');scheduleAutoAnalyze();try{paper.releasePointerCapture(e.pointerId)}catch(_){}e.preventDefault();}
+paper.addEventListener('pointerup',finishStroke,{passive:false});paper.addEventListener('pointercancel',finishStroke,{passive:false});
+['contextmenu','selectstart','dragstart','gesturestart','gesturechange','gestureend'].forEach(type=>paper.addEventListener(type,e=>e.preventDefault(),{passive:false}));
+paper.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});paper.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});paper.addEventListener('touchend',e=>e.preventDefault(),{passive:false});
+paper.addEventListener('lostpointercapture',e=>{if(writing&&e.pointerId===activePointerId)finishStroke(e)},{passive:false});
+function setTool(t){tool=t;document.getElementById('penBtn').classList.toggle('active',t==='pen');document.getElementById('eraserBtn').classList.toggle('active',t==='eraser');}
+function clearPaper(){if(!confirm('確定要清除今天這一頁的手寫內容嗎？'))return;resizePaper();if(!ctx)return;ctx.clearRect(0,0,paper.clientWidth,paper.clientHeight);localStorage.removeItem(diaryKey());strokeDirty=false;clearTimeout(autoAnalyzeTimer);setAnalysisStatus('本頁已清除 · 可直接重新書寫');}
+function importImage(e){const file=e.target.files[0];if(!file)return;const img=new Image();img.onload=()=>{resizePaper();ctx.drawImage(img,0,0,paper.clientWidth,paper.clientHeight);saveDiary();strokeDirty=true;setAnalysisStatus('✓ 已匯入 · 嘗試即時分析…');scheduleAutoAnalyze();URL.revokeObjectURL(img.src);};img.src=URL.createObjectURL(file);e.target.value='';}
+function catReact(type){const el=document.getElementById('catMessage');if(!el)return;el.innerHTML=type==='encourage'?'<strong>橘橘：</strong> 慢慢寫，我有看到。今天的帳我會幫你整理。':'<strong>橘橘：</strong> 目前我會把今天所有頁面一起分析，不會只看最後一頁。';}
+window.addEventListener('resize',()=>{resizePaper();loadDiaryForDate();drawPie();drawLine();});
+loadExpenses();
+const initD=state.date; document.getElementById('dateTitle').textContent=`${initD.getFullYear()} / ${String(initD.getMonth()+1).padStart(2,'0')} / ${String(initD.getDate()).padStart(2,'0')}　${['SUN','MON','TUE','WED','THU','FRI','SAT'][initD.getDay()]}`;
+const dashDate=document.querySelector('.v03-date'); if(dashDate) dashDate.textContent=`${initD.getFullYear()} / ${String(initD.getMonth()+1).padStart(2,'0')} / ${String(initD.getDate()).padStart(2,'0')}`;
+resizePaper();loadDiaryForDate();render();
+</script>
+
+<script>
+function v05GoHome(){
+  document.documentElement.classList.remove('diary-active');
+  const dash=document.getElementById('dashboardV03');
+  const app=document.querySelector('.app');
+  if(dash) dash.style.display='';
+  if(app) app.classList.remove('v03-open');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function v03OpenLegacyView(id){
+  document.getElementById('dashboardV03').style.display='none';
+  const app=document.querySelector('.app');
+  if(app) app.classList.add('v03-open');
+  document.documentElement.classList.toggle('diary-active', id==='diary');
+  if(typeof goView==='function') goView(id);
+  if(id==='diary') requestAnimationFrame(()=>{loadDiaryForDate(); window.scrollTo(0,0);});
+  else window.scrollTo({top:0,behavior:'smooth'});
+}
+function v03OpenCategory(name){
+  document.getElementById('dashboardV03').style.display='none';
+  const app=document.querySelector('.app');
+  if(app) app.classList.add('v03-open');
+  if(typeof openCategory==='function') openCategory(name);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function v03OpenDiary(){v03OpenLegacyView('diary'); requestAnimationFrame(()=>loadDiaryForDate());}
+function v03OpenToday(){v03OpenLegacyView('ledger')}
+function v03OpenLedger(){v03OpenLegacyView('ledger')}
+function v03OpenAnalysis(){v03OpenLegacyView('analysis')}
+</script>
+
+</body>
+</html>
